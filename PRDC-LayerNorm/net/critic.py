@@ -18,7 +18,7 @@ def hidden_transform(mode, depth):
         return nn.LayerNorm(256, elementwise_affine=False)
     if mode == "affine-only":
         return FeatureAffine(256)
-    layers = {"baseline": (), "layernorm": (1, 2), "ln-first": (1,), "ln-second": (2,)}
+    layers = {"layernorm": (1, 2), "ln-first": (1,), "ln-second": (2,)}
     return nn.LayerNorm(256) if depth in layers[mode] else nn.Identity()
 
 

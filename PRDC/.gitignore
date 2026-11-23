@@ -1,0 +1,5 @@
+.DS_Store
+result/
+.vscode/
+__MACOSX/
+*.pyc

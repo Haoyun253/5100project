@@ -2,8 +2,8 @@ import copy
 from scipy.spatial import KDTree
 import torch
 import torch.nn.functional as F
-from actor import Actor
-from critic import Critic
+from net.actor import Actor
+from net.critic import Critic
 
 
 class PRDC(object):

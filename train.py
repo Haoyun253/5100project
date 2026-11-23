@@ -1,5 +1,6 @@
 """Train PRDC on a local D4RL v2 HDF5 dataset."""
 import argparse
+import sys
 from pathlib import Path
 from typing import NamedTuple
 
@@ -7,9 +8,6 @@ import gymnasium as gym
 import h5py
 import numpy as np
 import torch
-
-from buffer import ReplayBuffer
-from prdc import PRDC
 
 MOTION_TYPES = ("random", "medium-replay", "medium-expert")
 MAZE_TYPES = ("umaze", "umaze-diverse", "medium-play", "medium-diverse", "large-play", "large-diverse")
@@ -102,6 +100,10 @@ def main():
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--checkpoint", type=Path, help="Optional output file for model and optimizer weights")
     args = parser.parse_args()
+    version = "PRDC" if args.critic == "baseline" else "PRDC-LayerNorm"
+    sys.path.insert(0, str(Path(__file__).resolve().parent / version))
+    from prdc import PRDC
+    from utils.buffer import ReplayBuffer
     if min(args.steps, args.eval_freq, args.eval_episodes) < 1:
         parser.error("steps, eval-freq and eval-episodes must be positive")
     if not args.data.is_file():
@@ -125,7 +127,8 @@ def main():
     del dataset
     mean, std = buffer.normalize_states()
     points = np.hstack([beta * buffer.state, buffer.action])
-    policy = PRDC(points, state_dim, action_dim, 1.0, args.device, critic_mode=args.critic,
+    critic_options = {} if version == "PRDC" else {"critic_mode": args.critic}
+    policy = PRDC(points, state_dim, action_dim, 1.0, args.device, **critic_options,
                   alpha=alpha if args.alpha is None else args.alpha, beta=beta)
     for step in range(1, args.steps + 1):
         policy.train(buffer, 256)

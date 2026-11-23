@@ -1,6 +1,13 @@
 # PRDC 与 critic LayerNorm
 
-本项目实现离线强化学习算法 PRDC，并支持在双 critic 的第一层、第二层或两层隐藏层上使用 LayerNorm。所有结构共用同一训练入口。算法基于 Ran 等人的 ICML 2023 论文 *Policy Regularization with Dataset Constraint for Offline Reinforcement Learning*。[论文](https://arxiv.org/abs/2306.06569) · [上游代码版本](https://github.com/LAMDA-RL/PRDC/tree/9f384640d52ff288e57ced09fc617617b557b3d1)
+仓库包含两套独立源码，均基于 Ran 等人的 ICML 2023 论文 *Policy Regularization with Dataset Constraint for Offline Reinforcement Learning*。[论文](https://arxiv.org/abs/2306.06569) · [上游代码版本](https://github.com/LAMDA-RL/PRDC/tree/9f384640d52ff288e57ced09fc617617b557b3d1)
+
+| 目录 | 内容 |
+|---|---|
+| [PRDC/](PRDC/) | 作者原版，完整对应上游提交 `9f384640d52ff288e57ced09fc617617b557b3d1`。 |
+| [PRDC-LayerNorm/](PRDC-LayerNorm/) | 从同一提交复制的修改版。`net/critic.py` 实现双 critic 隐藏层的 LayerNorm；`prdc.py` 传入 critic 配置，默认两层都使用 LayerNorm。 |
+
+两份源码各自包含 `main.py` 和作者的旧版 Gym/D4RL 依赖清单。下面的 Windows 配置使用仓库根目录的 `requirements.txt` 和 `train.py`，两套源码共用数据加载和评估。选择 `--critic baseline` 会加载 `PRDC/`，选择 `--critic layernorm` 会加载 `PRDC-LayerNorm/`。
 
 ## 配置环境（Windows PowerShell）
 
@@ -40,6 +47,7 @@ Hopper 的观测维度应为 `(11,)`。CPU 安装时，CUDA 检查返回 `False`
 
 ```powershell
 curl.exe --fail --location --create-dirs --output data/hopper_medium_replay-v2.hdf5 https://rail.eecs.berkeley.edu/datasets/offline_rl/gym_mujoco_v2/hopper_medium_replay-v2.hdf5
+.\.venv\Scripts\python.exe train.py --data data/hopper_medium_replay-v2.hdf5 --task hopper --dataset-type medium-replay --critic baseline --steps 2 --eval-freq 2 --eval-episodes 1
 .\.venv\Scripts\python.exe train.py --data data/hopper_medium_replay-v2.hdf5 --task hopper --dataset-type medium-replay --critic layernorm --steps 2 --eval-freq 2 --eval-episodes 1
 ```
 
