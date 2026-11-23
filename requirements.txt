@@ -1,0 +1,5 @@
+numpy==1.26.4
+scipy==1.13.1
+h5py==3.12.1
+gymnasium[mujoco]==1.1.1
+mujoco==3.2.7

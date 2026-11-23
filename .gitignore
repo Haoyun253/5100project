@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.py[cod]
+data/
+vendor/
+runs/
+*.hdf5
+*.pth
+*.npz
+*.log
